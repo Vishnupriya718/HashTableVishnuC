@@ -19,6 +19,15 @@ void deleteRecursive(node*& current, int id);
 void averageGpa(node* head);
 void averageRecursive(node* current, float& sum, int& count);
 
+
+// hash function
+// takes da student id and converts it into a valid index
+// for the hash table using modulo
+//table size lets us "rehash"
+int hashFunction(int id,int tableSize) {
+  return id % tableSize;
+}
+
 int main() {
   // size of the hash table 
   const int TABLE_SIZE = 100;

@@ -7,7 +7,8 @@
 using namespace std;
 
 //  prototypes so main knows these exist
-void addStudent(node*& head);
+// adds a student into the hash table using chaining
+void addStudent(node** table, int tableSize);
 void addRecursive(node*& current, node* newNode);
 
 void printStudents(node* head);

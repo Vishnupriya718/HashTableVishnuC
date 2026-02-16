@@ -6,20 +6,20 @@
 
 using namespace std;
 
-//  prototypes so main knows these exist
+
 // adds a student into the hash table using chaining
+
 void addStudent(node** table, int tableSize);
 void addRecursive(node*& current, node* newNode);
 
-void printStudents(node* head);
+void printStudents(node** table, int tableSize);
 void printRecursive(node* current);
 
-void deleteStudent(node*& head);
+void deleteStudent(node** table, int tableSize);
 void deleteRecursive(node*& current, int id);
 
-void averageGpa(node* head);
+void averageGpa(node** table, int tableSize);
 void averageRecursive(node* current, float& sum, int& count);
-
 
 // hash function
 // takes da student id and converts it into a valid index
@@ -41,7 +41,6 @@ int main() {
   for( int i = 0;i < TABLE_SIZE; i++)  {
     table[i] = NULL;
   }
-  node* head = NULL; // temporary: will be removed in next steps
 
   char command[10];
 

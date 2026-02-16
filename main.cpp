@@ -44,7 +44,10 @@ int main() {
 
   char command[10];
 
-    cout << "Enter a command (ADD, PRINT, DELETE, AVERAGE, QUIT):" << endl;
+
+  cout << "Enter a command (ADD, PRINT, DELETE, AVERAGE, QUIT):" << endl;
+  while (true) {
+    cin >> command;
 if (strcmp(command, "ADD") == 0) {
     addStudent(table, TABLE_SIZE);
 }
@@ -74,7 +77,7 @@ delete[] table;
 }
 
 // ADD STUDENT
-void addStudent(node*& head) {
+void addStudent(node** table, int tableSize); {
     // gather info from user
     char fname[15];
     char lname[30];
@@ -100,7 +103,9 @@ void addStudent(node*& head) {
     node* newNode = new node(s);
 
     //  recursion handles sorted insertion
-    addRecursive(head, newNode);
+    int index = hashFunction(id, tableSize);
+    addRecursive(table[index], newNode);
+
 }
 void addRecursive(node*& current, node* newNode) {
     if (current == NULL ||
@@ -116,12 +121,18 @@ void addRecursive(node*& current, node* newNode) {
     current->setNext(temp);            // write back updated pointer
 }
 // PRINT STUDENT
-void printStudents(node* head) {
-    if (head == NULL) {
-        cout << "No students in list." << endl;
-        return;
+void printStudents(node** table, int tableSize)
+   bool empty = true;
+
+for (int i = 0; i < tableSize; i++) {
+    if (table[i] != NULL) {
+        printRecursive(table[i]);
+        empty = false;
     }
-    printRecursive(head);
+}
+
+if (empty) {
+    cout << "No students in table." << endl;
 }
 
 void printRecursive(node* current) {
@@ -138,7 +149,7 @@ void printRecursive(node* current) {
 
 // DELETE STUDENT
 
-void deleteStudent(node*& head) {
+void deleteStudent(node** table, int tableSize)
     if (head == NULL) {
         cout << "List is empty." << endl;
         return;
@@ -158,14 +169,13 @@ void deleteRecursive(node*& current, int id) {
     }
 
     // found the node to delete
-    if (current->getStudent()->getID() == id) {
-        node* temp = current;
-        current = current->getNext();
+   int id;
+cout << "Enter student ID to delete: ";
+cin >> id;
 
-        delete temp->getStudent();
-        delete temp;
+int index = hashFunction(id, tableSize);
+deleteRecursive(table[index], id);
 
-        cout << "Student deleted." << endl;
         return;
     }
 

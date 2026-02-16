@@ -45,38 +45,31 @@ int main() {
   char command[10];
 
     cout << "Enter a command (ADD, PRINT, DELETE, AVERAGE, QUIT):" << endl;
+if (strcmp(command, "ADD") == 0) {
+    addStudent(table, TABLE_SIZE);
+}
+else if (strcmp(command, "PRINT") == 0) {
+    printStudents(table, TABLE_SIZE);
+}
+else if (strcmp(command, "DELETE") == 0) {
+    deleteStudent(table, TABLE_SIZE);
+}
+else if (strcmp(command, "AVERAGE") == 0) {
+    averageGpa(table, TABLE_SIZE);
+}
 
-    while (true) {
-        cin >> command;
-
-        if (strcmp(command, "ADD") == 0) {
-            addStudent(head);
-        }
-        else if (strcmp(command, "PRINT") == 0) {
-            printStudents(head);
-        }
-        else if (strcmp(command, "DELETE") == 0) {
-            deleteStudent(head);
-        }
-        else if (strcmp(command, "AVERAGE") == 0) {
-            averageGpa(head);
-        }
-        else if (strcmp(command, "QUIT") == 0) {
-            break;
-        }
-        else {
-            cout << "Unknown command." << endl;
-        }
-    }
 
     //  cleanup, memory leaks 
-    while (head != NULL) {
-        node* temp = head;
-        head = head->getNext();
+for (int i = 0; i < TABLE_SIZE; i++) {
+    while (table[i] != NULL) {
+        node* temp = table[i];
+        table[i] = table[i]->getNext();
         delete temp->getStudent();
         delete temp;
     }
+}
 
+delete[] table;
     return 0;
 }
 

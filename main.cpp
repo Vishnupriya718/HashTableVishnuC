@@ -7,7 +7,7 @@
 using namespace std;
 
 // Function prototypes
-void addStudent(node** table, int tableSize);
+void addStudent(node*** table, int& tableSize);
 void addRecursive(node*& current, node* newNode);
 
 void printStudents(node** table, int tableSize);
@@ -77,7 +77,7 @@ int main() {
 }
 
 // ADD STUDENT
-void addStudent(node** table, int tableSize) {
+void addStudent(node*** table, int& tableSize) {
     char fname[15];
     char lname[30];
     int id;

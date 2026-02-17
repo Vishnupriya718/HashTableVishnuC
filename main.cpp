@@ -6,9 +6,7 @@
 
 using namespace std;
 
-
-// adds a student into the hash table using chaining
-
+// Function prototypes
 void addStudent(node** table, int tableSize);
 void addRecursive(node*& current, node* newNode);
 
@@ -21,64 +19,65 @@ void deleteRecursive(node*& current, int id);
 void averageGpa(node** table, int tableSize);
 void averageRecursive(node* current, float& sum, int& count);
 
-// hash function
-// takes da student id and converts it into a valid index
-// for the hash table using modulo
-//table size lets us "rehash"
-int hashFunction(int id,int tableSize) {
-  return id % tableSize;
+// Hash function
+int hashFunction(int id, int tableSize) {
+    return id % tableSize;
 }
 
 int main() {
-  // size of the hash table 
-  const int TABLE_SIZE = 100;
-  // array of node pointers; each index represents the head of linked list (basically chaining)
+    const int TABLE_SIZE = 100;
 
-  node** table= new node*[TABLE_SIZE];
+    node** table = new node*[TABLE_SIZE];
 
-  // initalizing all the buckets to null
-
-  for( int i = 0;i < TABLE_SIZE; i++)  {
-    table[i] = NULL;
-  }
-
-  char command[10];
-
-
-  cout << "Enter a command (ADD, PRINT, DELETE, AVERAGE, QUIT):" << endl;
-  while (true) {
-    cin >> command;
-if (strcmp(command, "ADD") == 0) {
-    addStudent(table, TABLE_SIZE);
-}
-else if (strcmp(command, "PRINT") == 0) {
-    printStudents(table, TABLE_SIZE);
-}
-else if (strcmp(command, "DELETE") == 0) {
-    deleteStudent(table, TABLE_SIZE);
-}
-else if (strcmp(command, "AVERAGE") == 0) {
-    averageGpa(table, TABLE_SIZE);
-}
-
-
-    //  cleanup, memory leaks 
-for (int i = 0; i < TABLE_SIZE; i++) {
-    while (table[i] != NULL) {
-        node* temp = table[i];
-        table[i] = table[i]->getNext();
-        delete temp->getStudent();
-        delete temp;
+    // Initialize buckets
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        table[i] = NULL;
     }
-}
 
-delete[] table;
+    char command[20];
+
+    cout << "Enter a command (ADD, PRINT, DELETE, AVERAGE, QUIT):" << endl;
+
+    while (true) {
+        cin >> command;
+
+        if (strcmp(command, "ADD") == 0) {
+            addStudent(table, TABLE_SIZE);
+        }
+        else if (strcmp(command, "PRINT") == 0) {
+            printStudents(table, TABLE_SIZE);
+        }
+        else if (strcmp(command, "DELETE") == 0) {
+            deleteStudent(table, TABLE_SIZE);
+        }
+        else if (strcmp(command, "AVERAGE") == 0) {
+            averageGpa(table, TABLE_SIZE);
+        }
+        else if (strcmp(command, "QUIT") == 0) {
+            break;
+        }
+        else {
+            cout << "Unknown command." << endl;
+        }
+    }
+
+    // Cleanup memory
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        while (table[i] != NULL) {
+            node* temp = table[i];
+            table[i] = table[i]->getNext();
+            delete temp->getStudent();
+            delete temp;
+        }
+    }
+
+    delete[] table;
+
     return 0;
 }
 
 // ADD STUDENT
-void addStudent(node** table, int tableSize); {
-    // gather info from user
+void addStudent(node** table, int tableSize) {
     char fname[15];
     char lname[30];
     int id;
@@ -96,17 +95,13 @@ void addStudent(node** table, int tableSize); {
     cout << "Enter GPA: ";
     cin >> gpa;
 
-    // make the student object
     student* s = new student(fname, lname, id, gpa);
-
-    //  wrap it in a node bc linked list moment
     node* newNode = new node(s);
 
-    //  recursion handles sorted insertion
     int index = hashFunction(id, tableSize);
     addRecursive(table[index], newNode);
-
 }
+
 void addRecursive(node*& current, node* newNode) {
     if (current == NULL ||
         newNode->getStudent()->getID() < current->getStudent()->getID()) {
@@ -116,50 +111,48 @@ void addRecursive(node*& current, node* newNode) {
         return;
     }
 
-    node* temp = current->getNext();   // copy next pointer
-    addRecursive(temp, newNode);       // recurse on the copy
-    current->setNext(temp);            // write back updated pointer
+    node* temp = current->getNext();
+    addRecursive(temp, newNode);
+    current->setNext(temp);
 }
-// PRINT STUDENT
-void printStudents(node** table, int tableSize)
-   bool empty = true;
 
-for (int i = 0; i < tableSize; i++) {
-    if (table[i] != NULL) {
-        printRecursive(table[i]);
-        empty = false;
+// PRINT STUDENTS
+void printStudents(node** table, int tableSize) {
+    bool empty = true;
+
+    for (int i = 0; i < tableSize; i++) {
+        if (table[i] != NULL) {
+            printRecursive(table[i]);
+            empty = false;
+        }
     }
-}
 
-if (empty) {
-    cout << "No students in table." << endl;
+    if (empty) {
+        cout << "No students in table." << endl;
+    }
 }
 
 void printRecursive(node* current) {
     if (current == NULL) return;
 
     student* s = current->getStudent();
-    cout << s->getFirst() << " " << s->getLast() << ", "
+    cout << s->getFirst() << " "
+         << s->getLast() << ", "
          << s->getID() << ", "
-         << fixed << setprecision(2) << s->getGPA() << endl;
+         << fixed << setprecision(2)
+         << s->getGPA() << endl;
 
     printRecursive(current->getNext());
 }
 
-
 // DELETE STUDENT
-
-void deleteStudent(node** table, int tableSize)
-    if (head == NULL) {
-        cout << "List is empty." << endl;
-        return;
-    }
-
+void deleteStudent(node** table, int tableSize) {
     int id;
     cout << "Enter student ID to delete: ";
     cin >> id;
 
-    deleteRecursive(head, id);
+    int index = hashFunction(id, tableSize);
+    deleteRecursive(table[index], id);
 }
 
 void deleteRecursive(node*& current, int id) {
@@ -168,47 +161,45 @@ void deleteRecursive(node*& current, int id) {
         return;
     }
 
-    // found the node to delete
-   int id;
-cout << "Enter student ID to delete: ";
-cin >> id;
+    if (current->getStudent()->getID() == id) {
+        node* temp = current;
+        current = current->getNext();
 
-int index = hashFunction(id, tableSize);
-deleteRecursive(table[index], id);
+        delete temp->getStudent();
+        delete temp;
 
+        cout << "Student deleted." << endl;
         return;
     }
 
-    // FIXED: cannot pass current->getNext() directly
     node* temp = current->getNext();
     deleteRecursive(temp, id);
     current->setNext(temp);
 }
-// AVERAGE GPA
-// function so main doesn't deal with sum/count directly
-void averageGpa(node* head) {
-    if (head == NULL) {
-        cout << "No students in list." << endl;
-        return;
-    }
 
+// AVERAGE GPA
+void averageGpa(node** table, int tableSize) {
     float sum = 0;
     int count = 0;
 
-    //recursion does the heavy lifting
-    averageRecursive(head, sum, count);
+    for (int i = 0; i < tableSize; i++) {
+        averageRecursive(table[i], sum, count);
+    }
 
-    cout << fixed << setprecision(2) << (sum / count) << endl;
+    if (count == 0) {
+        cout << "No students in table." << endl;
+    }
+    else {
+        cout << fixed << setprecision(2)
+             << (sum / count) << endl;
+    }
 }
 
-//recursive helper: walk the list, add GPAs, count students
 void averageRecursive(node* current, float& sum, int& count) {
-    if (current == NULL) return;  // base case
+    if (current == NULL) return;
 
     sum += current->getStudent()->getGPA();
     count++;
 
     averageRecursive(current->getNext(), sum, count);
 }
-
-

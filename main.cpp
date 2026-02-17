@@ -97,8 +97,22 @@ void addStudent(node** table, int tableSize) {
 
     student* s = new student(fname, lname, id, gpa);
     node* newNode = new node(s);
-
+// Count how many nodes are already in this bucket
     int index = hashFunction(id, tableSize);
+    int chainLength = 0;
+    node* temp = table[index];
+
+    while (temp != NULL) {
+      chainLength++;
+      temp = temp->getNext();
+    }
+
+    if (chainLength >= 3) {
+        cout << "Warning: Chain length exceeded 3 at index "
+             << index << endl;
+    }
+    // Insert into correct bucket using recursion
+  
     addRecursive(table[index], newNode);
 }
 

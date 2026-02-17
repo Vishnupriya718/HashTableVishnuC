@@ -25,12 +25,12 @@ int hashFunction(int id, int tableSize) {
 }
 
 int main() {
-    const int TABLE_SIZE = 100;
+    int tableSize = 100;
 
-    node** table = new node*[TABLE_SIZE];
+    node** table = new node*[tableSize];
 
     // Initialize buckets
-    for (int i = 0; i < TABLE_SIZE; i++) {
+    for (int i = 0; i < tableSize; i++) {
         table[i] = NULL;
     }
 
@@ -42,16 +42,16 @@ int main() {
         cin >> command;
 
         if (strcmp(command, "ADD") == 0) {
-            addStudent(table, TABLE_SIZE);
+            addStudent(&table, tableSize);
         }
         else if (strcmp(command, "PRINT") == 0) {
-            printStudents(table, TABLE_SIZE);
+            printStudents(table, tableSize);
         }
         else if (strcmp(command, "DELETE") == 0) {
-            deleteStudent(table, TABLE_SIZE);
+            deleteStudent(table, tableSize);
         }
         else if (strcmp(command, "AVERAGE") == 0) {
-            averageGpa(table, TABLE_SIZE);
+            averageGpa(table, tableSize);
         }
         else if (strcmp(command, "QUIT") == 0) {
             break;
@@ -62,7 +62,7 @@ int main() {
     }
 
     // Cleanup memory
-    for (int i = 0; i < TABLE_SIZE; i++) {
+    for (int i = 0; i < tableSize; i++) {
         while (table[i] != NULL) {
             node* temp = table[i];
             table[i] = table[i]->getNext();

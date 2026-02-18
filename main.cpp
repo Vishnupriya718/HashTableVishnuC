@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <iomanip>
 #include <cstring>
@@ -19,12 +21,15 @@ void deleteRecursive(node*& current, int id);
 void averageGpa(node** table, int tableSize);
 void averageRecursive(node* current, float& sum, int& count);
 
+void randomStudents(node*** table, int& tableSize);
+
 // Hash function
 int hashFunction(int id, int tableSize) {
     return id % tableSize;
 }
 
 int main() {
+    srand(time(NULL));
     int tableSize = 100;
 
     node** table = new node*[tableSize];
@@ -36,7 +41,7 @@ int main() {
 
     char command[20];
 
-    cout << "Enter a command (ADD, PRINT, DELETE, AVERAGE, QUIT):" << endl;
+    cout << "Enter a command (ADD, PRINT, DELETE, AVERAGE, QUIT,RANDOM):" << endl;
 
     while (true) {
         cin >> command;
@@ -56,6 +61,10 @@ int main() {
         else if (strcmp(command, "QUIT") == 0) {
             break;
         }
+	else if (strcmp(command, "RANDOM") == 0) {
+	  randomStudents(&table, tableSize);
+        }
+
         else {
             cout << "Unknown command." << endl;
         }
@@ -247,3 +256,77 @@ void averageRecursive(node* current, float& sum, int& count) {
 
     averageRecursive(current->getNext(), sum, count);
 }
+
+void randomStudents(node*** table, int& tableSize) {
+    int count;
+    cout << "How many students to generate? ";
+    cin >> count;
+
+    const char* firstNames[] = {
+        "Vishnu","Priya","Saanvi","Akhila","Stacie",
+        "Puja","Janani","Vishal","Anu","Aanya"
+    };
+
+    const char* lastNames[] = {
+        "Chunduri","Gollapudi","Vodapally","Chitluri","Ganguly",
+        "Devarsetty","Sivarmurgan","batchu","Mudda","Juvvadi"
+    };
+
+    for (int i = 0; i < count; i++) {
+        const char* fname = firstNames[rand() % 10];
+        const char* lname = lastNames[rand() % 10];
+
+        int id = rand() % 900000 + 100000; // 6-digit ID
+        float gpa = (rand() % 501) / 100.0; // 0.00–5.00
+
+        student* s = new student((char*)fname, (char*)lname, id, gpa);
+        node* newNode = new node(s);
+
+        int index = hashFunction(id, tableSize);
+
+        int chainLength = 0;
+        node* temp = (*table)[index];
+
+        while (temp != NULL) {
+            chainLength++;
+            temp = temp->getNext();
+        }
+
+        if (chainLength >= 3) {
+            cout << "Resizing table..." << endl;
+
+            int newSize = tableSize * 2;
+            node** newTable = new node*[newSize];
+
+            for (int j = 0; j < newSize; j++) {
+                newTable[j] = NULL;
+            }
+
+            for (int j = 0; j < tableSize; j++) {
+                node* current = (*table)[j];
+
+                while (current != NULL) {
+                    student* oldStudent = current->getStudent();
+                    int newIndex = hashFunction(oldStudent->getID(), newSize);
+
+                    node* copyNode = new node(oldStudent);
+                    addRecursive(newTable[newIndex], copyNode);
+
+                    current = current->getNext();
+                }
+            }
+
+            delete[] (*table);
+
+            *table = newTable;
+            tableSize = newSize;
+
+            index = hashFunction(id, tableSize);
+        }
+
+        addRecursive((*table)[index], newNode);
+    }
+
+    cout << count << " random students added." << endl;
+}
+

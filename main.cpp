@@ -100,20 +100,50 @@ void addStudent(node*** table, int& tableSize) {
 // Count how many nodes are already in this bucket
     int index = hashFunction(id, tableSize);
     int chainLength = 0;
-    node* temp = table[index];
+    node* temp =(*table)[index];
 
     while (temp != NULL) {
       chainLength++;
       temp = temp->getNext();
     }
 
+
     if (chainLength >= 3) {
-        cout << "Warning: Chain length exceeded 3 at index "
-             << index << endl;
+    cout << "Resizing table..." << endl;
+
+    int newSize = tableSize * 2;
+    node** newTable = new node*[newSize];
+
+    for (int i = 0; i < newSize; i++) {
+        newTable[i] = NULL;
     }
+
+    // Rehash all existing nodes
+    for (int i = 0; i < tableSize; i++) {
+        node* current = (*table)[i];
+
+        while (current != NULL) {
+            student* oldStudent = current->getStudent();
+            int newIndex = hashFunction(oldStudent->getID(), newSize);
+
+            node* copyNode = new node(oldStudent);
+            addRecursive(newTable[newIndex], copyNode);
+
+            current = current->getNext();
+        }
+    }
+
+    delete[] (*table);
+
+    *table = newTable;
+    tableSize = newSize;
+
+    index = hashFunction(id, tableSize);
+}
+
     // Insert into correct bucket using recursion
   
-    addRecursive(table[index], newNode);
+    addRecursive((*table)[index], newNode);
 }
 
 void addRecursive(node*& current, node* newNode) {
